@@ -5,7 +5,15 @@
 
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import subprocess
+import sys
+
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "matplotlib"])
+    import matplotlib.pyplot as plt
+
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
