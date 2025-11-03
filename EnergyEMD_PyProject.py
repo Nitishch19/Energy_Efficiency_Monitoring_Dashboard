@@ -76,7 +76,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =============================================================================
-# CURRENCY SELECTION FEATURE (NEW)
+# CURRENCY SELECTION FEATURE 
 # =============================================================================
 st.sidebar.markdown("### 💰 Currency Settings")
 
@@ -307,7 +307,7 @@ if not df.empty:
     # PAGE 1: OVERVIEW
     # =============================================================================
     if selected_page == "🏠 Overview":
-        st.markdown("<h1 class='main-header'>⚡ Energy Efficiency Monitoring Dashboard</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 class='main-header'> Energy Efficiency Monitoring Dashboard</h1>", unsafe_allow_html=True)
         
         # Info box explaining dashboard purpose
         st.markdown("""
@@ -331,7 +331,7 @@ if not df.empty:
             st.markdown(f"""
             <div class='metric-container'>
                 <h4>Total Energy</h4>
-                <h2 style='color: #e74c3c;'>{total_energy:,.1f} kWh</h2>
+                <h2>{total_energy:,.1f} kWh</h2>
             </div>
             """, unsafe_allow_html=True)
         
@@ -340,7 +340,7 @@ if not df.empty:
             st.markdown(f"""
             <div class='metric-container'>
                 <h4>Total Cost</h4>
-                <h2 style='color: #f39c12;'>{fmt_money(convert_currency(total_cost))}</h2>
+                <h2>{fmt_money(convert_currency(total_cost))}</h2>
             </div>
             """, unsafe_allow_html=True)
         
@@ -348,7 +348,7 @@ if not df.empty:
             st.markdown(f"""
             <div class='metric-container'>
                 <h4>Carbon Footprint</h4>
-                <h2 style='color: #95a5a6;'>{total_carbon:,.1f} kg CO₂</h2>
+                <h2>{total_carbon:,.1f} kg CO₂</h2>
             </div>
             """, unsafe_allow_html=True)
         
@@ -356,7 +356,7 @@ if not df.empty:
             st.markdown(f"""
             <div class='metric-container'>
                 <h4>Avg Efficiency</h4>
-                <h2 style='color: #27ae60;'>{avg_efficiency:.1f}%</h2>
+                <h2>{avg_efficiency:.1f}%</h2>
             </div>
             """, unsafe_allow_html=True)
         
@@ -366,7 +366,7 @@ if not df.empty:
             st.markdown(f"""
             <div class='metric-container'>
                 <h4>Potential Savings</h4>
-                <h2 style='color: #2c5aa0;'>{fmt_money(convert_currency(potential_savings))}</h2>
+                <h2>{fmt_money(convert_currency(potential_savings))}</h2>
             </div>
             """, unsafe_allow_html=True)
         
@@ -739,7 +739,7 @@ if not df.empty:
             st.plotly_chart(fig, use_container_width=True)
             
             # Energy saving scenarios with currency
-            st.markdown("### 💰 Potential Savings Scenarios")
+            st.markdown("Potential Savings Scenarios")
             
             scenarios = pd.DataFrame({
                 'Scenario': ['Current', '5% Improvement', '10% Improvement', '15% Improvement'],
@@ -986,21 +986,6 @@ if not df.empty:
         - Alert systems for immediate response to anomalies
         - Recommendation engines for continuous improvement
         """)
-        
-        # Call to action
-        st.markdown("""
-        <div class='energy-alert'>
-        <h4>🚀 Next Steps for Implementation</h4>
-        
-        <strong>Phase 1:</strong> Pilot deployment in select buildings
-        <br><strong>Phase 2:</strong> Scale to entire campus/complex
-        <br><strong>Phase 3:</strong> Integration with smart city infrastructure
-        <br><strong>Phase 4:</strong> Community-wide adoption and knowledge sharing
-        
-        <br><br>
-        <strong>Join the sustainable energy revolution! 🌱⚡</strong>
-        </div>
-        """, unsafe_allow_html=True)
 
 # Footer
 st.markdown("---")
