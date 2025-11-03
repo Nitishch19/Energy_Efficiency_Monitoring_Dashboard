@@ -5,9 +5,7 @@
 
 import streamlit as st
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
@@ -369,60 +367,51 @@ if not df.empty:
                 <h2>{fmt_money(convert_currency(potential_savings))}</h2>
             </div>
             """, unsafe_allow_html=True)
-        
-        # Charts section
+
         col1, col2 = st.columns(2)
-        
+
         with col1:
-            # Energy consumption by building
             building_energy = df.groupby('building')['energy_kwh'].sum().reset_index()
-            fig1 = px.bar(
-                building_energy,
-                x='building',
-                y='energy_kwh',
-                title="Energy Consumption by Building",
-                color='energy_kwh',
-                color_continuous_scale='reds'
-            )
-            st.plotly_chart(fig1, use_container_width=True)
-        
+            fig1, ax1 = plt.subplots(figsize=(8, 4))
+            ax1.bar(building_energy['building'], building_energy['energy_kwh'], color='red')
+            ax1.set_title("Energy Consumption by Building")
+            ax1.set_xlabel("Building")
+            ax1.set_ylabel("Energy (kWh)")
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            st.pyplot(fig1)
+
         with col2:
-            # Cost by building (using converted currency)
             building_cost = df.groupby('building')['cost_local'].sum().reset_index()
-            fig2 = px.bar(
-                building_cost,
-                x='building',
-                y='cost_local',
-                title=f"Cost by Building ({currency})",
-                color='cost_local',
-                color_continuous_scale='greens'
-            )
-            st.plotly_chart(fig2, use_container_width=True)
-        
-        # Daily energy trend
+            fig2, ax2 = plt.subplots(figsize=(8, 4))
+            ax2.bar(building_cost['building'], building_cost['cost_local'], color='green')
+            ax2.set_title(f"Cost by Building ({currency})")
+            ax2.set_xlabel("Building")
+            ax2.set_ylabel(f"Cost ({currency})")
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            st.pyplot(fig2)
+
         daily_trend = df.groupby('date')['energy_kwh'].sum().reset_index()
-        fig3 = px.line(
-            daily_trend,
-            x='date',
-            y='energy_kwh',
-            title="Daily Energy Consumption Trend",
-            markers=True
-        )
-        st.plotly_chart(fig3, use_container_width=True)
-        
-        # Appliance efficiency overview
+        fig3, ax3 = plt.subplots(figsize=(8, 4))
+        ax3.plot(daily_trend['date'], daily_trend['energy_kwh'], marker='o', linestyle='-')
+        ax3.set_title("Daily Energy Consumption Trend")
+        ax3.set_xlabel("Date")
+        ax3.set_ylabel("Energy (kWh)")
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        st.pyplot(fig3)
+
         st.markdown("### 🔌 Appliance Efficiency Overview")
-        fig4 = px.bar(
-            appliance_df,
-            x='appliance',
-            y='avg_daily_kwh',
-            color='efficiency_rating',
-            title="Average Daily Consumption by Appliance",
-            color_continuous_scale='RdYlGn'
-        )
-        fig4.update_xaxes(tickangle=45)
-        st.plotly_chart(fig4, use_container_width=True)
-    
+        fig4, ax4 = plt.subplots(figsize=(8, 4))
+        bars = ax4.bar(appliance_df['appliance'], appliance_df['avg_daily_kwh'], color=plt.cm.RdYlGn(appliance_df['efficiency_rating'] / 100))
+        ax4.set_title("Average Daily Consumption by Appliance")
+        ax4.set_xlabel("Appliance")
+        ax4.set_ylabel("Average Daily kWh")
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        st.pyplot(fig4)
+
     # =============================================================================
     # PAGE 2: ROOM ANALYSIS
     # =============================================================================
@@ -478,46 +467,52 @@ if not df.empty:
             st.markdown("### 📈 Trends")
             col1, col2 = st.columns(2)
             
+            import matplotlib.pyplot as plt
+            
             with col1:
-                # Energy consumption trend
-                fig1 = px.line(
-                    room_data,
-                    x='date',
-                    y='energy_kwh',
-                    title=f"{selected_room} Energy Consumption Trend",
-                    markers=True
-                )
-                st.plotly_chart(fig1, use_container_width=True)
+                fig1, ax1 = plt.subplots(figsize=(8, 4))  # Unpack figure and axes
+                
+                room_data_sorted = room_data.sort_values('date')
+                ax1.plot(room_data_sorted['date'], room_data_sorted['energy_kwh'], marker='o', linestyle='-')
+                ax1.set_title(f"{selected_room} Energy Consumption Trend")
+                ax1.set_xlabel("Date")
+                ax1.set_ylabel("Energy (kWh)")
+                plt.xticks(rotation=45)
+                plt.tight_layout()
+                st.pyplot(fig1)
             
             with col2:
-                # Efficiency trend
-                fig2 = px.line(
-                    room_data,
-                    x='date',
-                    y='efficiency_percent',
-                    title=f"{selected_room} Efficiency Trend",
-                    markers=True,
-                    color_discrete_sequence=['green']
-                )
-                st.plotly_chart(fig2, use_container_width=True)
+                fig2, ax2 = plt.subplots(figsize=(8, 4))
+                ax2.plot(room_data_sorted['date'], room_data_sorted['efficiency_percent'], marker='o', linestyle='-', color='green')
+                ax2.set_title(f"{selected_room} Efficiency Trend")
+                ax2.set_xlabel("Date")
+                ax2.set_ylabel("Efficiency (%)")
+                plt.xticks(rotation=45)
+                plt.tight_layout()
+                st.pyplot(fig2)
             
             # Cost trend chart
-            fig3 = px.bar(
-                room_data,
-                x='date',
-                y='cost_local',
-                title=f"Daily Cost Trend - {selected_room} ({currency})",
-                color='cost_local',
-                color_continuous_scale='Viridis'
-            )
-            st.plotly_chart(fig3, use_container_width=True)
+            fig3, ax3 = plt.subplots(figsize=(8, 4))
             
+            ax3.bar(room_data_sorted['date'], room_data_sorted['cost_local'], color='purple')
+            ax3.set_title(f"Daily Cost Trend - {selected_room} ({currency})")
+            ax3.set_xlabel("Date")
+            ax3.set_ylabel(f"Cost ({currency})")
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            st.pyplot(fig3)
+
             # Energy analysis
             st.markdown("### 📊 Detailed Analysis")
             
             avg_daily = room_data['energy_kwh'].mean()
             max_daily = room_data['energy_kwh'].max()
             min_daily = room_data['energy_kwh'].min()
+
+            st.write("Latest energy:", latest_data['energy_kwh'])
+            st.write("Average daily energy:", avg_daily)
+            st.write("Threshold (avg * 1.2):", avg_daily * 1.2)
+
             
             # Alert if energy usage is high
             if latest_data['energy_kwh'] > avg_daily * 1.2:
@@ -530,9 +525,7 @@ if not df.empty:
             
             # Room-specific recommendations
             st.markdown("### 💡 Room Optimization Recommendations")
-            
-            if latest_data['efficiency_percent'] < 80:
-                st.markdown("""
+            st.markdown("""
                 <div class='efficiency-tip'>
                 🔧 <strong>Low Efficiency Detected:</strong>
                 <ul>
@@ -591,44 +584,57 @@ if not df.empty:
         display_summary = display_summary.rename(columns={'Cost Local': f'Total Cost ({currency})'})
         st.dataframe(display_summary, use_container_width=True, hide_index=True)
         
-        # Comparison charts
+        # Comparison charts using matplotlib
         col1, col2 = st.columns(2)
         
         with col1:
-            fig1 = px.bar(
-                building_summary,
-                x='building',
-                y='Total Energy',
-                title="Total Energy Consumption Comparison",
-                color='Total Energy',
-                color_continuous_scale='reds'
-            )
-            st.plotly_chart(fig1, use_container_width=True)
+            fig1, ax1 = plt.subplots(figsize=(8, 5))
+            ax1.bar(building_summary['building'], building_summary['Total Energy'], color='tab:red')
+            ax1.set_title("Total Energy Consumption Comparison")
+            ax1.set_xlabel("Building")
+            ax1.set_ylabel("Total Energy (kWh)")
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            st.pyplot(fig1)
         
         with col2:
-            fig2 = px.bar(
-                building_summary,
-                x='building',
-                y='Avg Efficiency',
-                title="Average Efficiency Comparison",
-                color='Avg Efficiency',
-                color_continuous_scale='greens'
-            )
-            st.plotly_chart(fig2, use_container_width=True)
+            fig2, ax2 = plt.subplots(figsize=(8, 5))
+            ax2.bar(building_summary['building'], building_summary['Avg Efficiency'], color='tab:green')
+            ax2.set_title("Average Efficiency Comparison")
+            ax2.set_xlabel("Building")
+            ax2.set_ylabel("Average Efficiency (%)")
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            st.pyplot(fig2)
         
-        # Floor-wise comparison
+        # Floor-wise comparison with a sunburst alternative (stacked bar or grouped bar)
+        # Matplotlib has no native sunburst, so use stacked bars
         st.markdown("### 🏢 Floor-wise Energy Distribution")
         
         floor_data = df.groupby(['building', 'floor'])['energy_kwh'].sum().reset_index()
+        buildings = floor_data['building'].unique()
+        floors = floor_data['floor'].unique()
         
-        fig3 = px.sunburst(
-            floor_data,
-            path=['building', 'floor'],
-            values='energy_kwh',
-            title="Energy Consumption Hierarchy: Building → Floor"
-        )
-        st.plotly_chart(fig3, use_container_width=True)
-    
+        fig3, ax3 = plt.subplots(figsize=(10, 6))
+        
+        # Create a pivot table for stacked bar: index=building, columns=floor, values=energy
+        pivot_floor = floor_data.pivot(index='building', columns='floor', values='energy_kwh').fillna(0)
+        
+        bottom = np.zeros(len(pivot_floor))
+        floor_colors = plt.cm.Paired.colors[:len(pivot_floor.columns)]
+        
+        for i, floor in enumerate(pivot_floor.columns):
+            ax3.bar(pivot_floor.index, pivot_floor[floor], bottom=bottom, label=floor, color=floor_colors[i])
+            bottom += pivot_floor[floor]
+        
+        ax3.set_title("Energy Consumption Hierarchy: Building → Floor (Stacked Bar)")
+        ax3.set_xlabel("Building")
+        ax3.set_ylabel("Energy (kWh)")
+        ax3.legend(title="Floor", bbox_to_anchor=(1.05, 1), loc='upper left')
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        st.pyplot(fig3)
+
     # =============================================================================
     # PAGE 4: ENERGY PREDICTIONS
     # =============================================================================
@@ -657,36 +663,25 @@ if not df.empty:
             pred_days = st.slider("Prediction Period (days)", 1, 30, 7, key="pred_days")
             
             if st.button("Generate Prediction"):
-                # Create prediction features
                 predictions = []
                 base_date = df['date'].max()
                 
                 for i in range(pred_days):
                     future_date = base_date + timedelta(days=i+1)
-                    
                     # Create feature vector
                     features = pd.DataFrame({
                         'day_of_week': [future_date.dayofweek],
                         'month': [future_date.month],
                         'efficiency_percent': [pred_efficiency]
                     })
-                    
-                    # Add building and floor dummies
                     for building in df['building'].unique():
                         features[f'building_{building}'] = [1 if building == pred_building else 0]
-                    
                     for floor in df['floor'].unique():
                         features[f'floor_{floor}'] = [1 if floor == pred_floor else 0]
-                    
-                    # Ensure all feature columns are present
                     for col in feature_names:
                         if col not in features.columns:
                             features[col] = [0]
-                    
-                    # Reorder columns to match training
                     features = features[feature_names]
-                    
-                    # Make prediction
                     pred_energy = model.predict(features)[0]
                     pred_cost = pred_energy * 0.12  # $0.12 per kWh
                     pred_carbon = pred_energy * 0.4  # 0.4 kg CO2 per kWh
@@ -700,15 +695,15 @@ if not df.empty:
                 
                 pred_df = pd.DataFrame(predictions)
                 
-                # Display predictions
-                fig = px.line(
-                    pred_df,
-                    x='date',
-                    y='predicted_energy_kwh',
-                    title=f"Energy Consumption Forecast - {pred_building}, {pred_floor}",
-                    markers=True
-                )
-                st.plotly_chart(fig, use_container_width=True)
+                # Replace plotly line chart with matplotlib
+                fig, ax = plt.subplots(figsize=(8, 4))
+                ax.plot(pred_df['date'], pred_df['predicted_energy_kwh'], marker='o', linestyle='-')
+                ax.set_title(f"Energy Consumption Forecast - {pred_building}, {pred_floor}")
+                ax.set_xlabel("Date")
+                ax.set_ylabel("Predicted Energy (kWh)")
+                plt.xticks(rotation=45)
+                plt.tight_layout()
+                st.pyplot(fig)
                 
                 # Summary metrics with currency conversion
                 total_pred_energy = pred_df['predicted_energy_kwh'].sum()
@@ -726,19 +721,18 @@ if not df.empty:
         with col2:
             st.markdown("### 📊 Historical vs Predicted Trends")
             
-            # Show recent trend
             recent_data = df.groupby('date')['energy_kwh'].sum().reset_index().tail(10)
             
-            fig = px.line(
-                recent_data,
-                x='date',
-                y='energy_kwh',
-                title="Recent Energy Consumption Trend",
-                markers=True
-            )
-            st.plotly_chart(fig, use_container_width=True)
+            # Replace plotly line chart with matplotlib
+            fig_hist, ax_hist = plt.subplots(figsize=(8, 4))
+            ax_hist.plot(recent_data['date'], recent_data['energy_kwh'], marker='o', linestyle='-')
+            ax_hist.set_title("Recent Energy Consumption Trend")
+            ax_hist.set_xlabel("Date")
+            ax_hist.set_ylabel("Energy (kWh)")
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+            st.pyplot(fig_hist)
             
-            # Energy saving scenarios with currency
             st.markdown("Potential Savings Scenarios")
             
             scenarios = pd.DataFrame({
@@ -747,17 +741,14 @@ if not df.empty:
                 'Monthly Cost': [540, 513, 486, 459],
                 'Annual Savings': [0, 324, 648, 972]
             })
-            
-            # Convert cost columns to selected currency
             scenarios['Monthly Cost'] = scenarios['Monthly Cost'].apply(convert_currency)
             scenarios['Annual Savings'] = scenarios['Annual Savings'].apply(convert_currency)
             scenarios = scenarios.rename(columns={
                 'Monthly Cost': f'Monthly Cost ({currency})',
                 'Annual Savings': f'Annual Savings ({currency})'
             })
-            
             st.dataframe(scenarios, use_container_width=True, hide_index=True)
-    
+
     # =============================================================================
     # PAGE 5: EFFICIENCY RECOMMENDATIONS
     # =============================================================================
@@ -864,19 +855,36 @@ if not df.empty:
             'Initial Cost': f'Initial Cost ({currency})',
             'Annual Savings': f'Annual Savings ({currency})'
         })
-        
-        fig = px.scatter(
-            investments,
-            x=f'Initial Cost ({currency})',
-            y=f'Annual Savings ({currency})',
-            size='CO₂ Reduction (kg/year)',
-            color='Payback Period (years)',
-            title="Energy Efficiency Investment Analysis",
-            hover_data=['Improvement']
-        )
-        st.plotly_chart(fig, use_container_width=True)
-        
+
+        # Prepare data
+        x = investments[f'Initial Cost ({currency})']
+        y = investments[f'Annual Savings ({currency})']
+        sizes = investments['CO₂ Reduction (kg/year)'] * 10  # scale marker sizes
+        colors = investments['Payback Period (years)']  # mapped to color
+
+        fig, ax = plt.subplots(figsize=(8, 6))
+
+        # Scatter plot with sizes and colors
+        scatter = ax.scatter(x, y, s=sizes, c=colors, cmap='viridis', alpha=0.7, edgecolors='w', linewidth=0.5)
+
+        ax.set_xlabel(f'Initial Cost ({currency})')
+        ax.set_ylabel(f'Annual Savings ({currency})')
+        ax.set_title('Energy Efficiency Investment Analysis')
+
+        # Colorbar for payback period
+        cbar = plt.colorbar(scatter, ax=ax)
+        cbar.set_label('Payback Period (years)')
+
+        # Annotate with improvement labels
+        for i, txt in enumerate(investments['Improvement']):
+            ax.annotate(txt, (x[i], y[i]), xytext=(5, 2), textcoords='offset points', fontsize=8)
+
+        plt.tight_layout()
+        st.pyplot(fig)
+
+        # Display data table
         st.dataframe(investments, use_container_width=True, hide_index=True)
+
     
     # =============================================================================
     # PAGE 6: ABOUT SDGs
