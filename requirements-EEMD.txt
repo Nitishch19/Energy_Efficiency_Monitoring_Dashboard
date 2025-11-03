@@ -8,8 +8,7 @@ numpy>=1.24.0              # Numerical computing and array operations
 openpyxl>=3.1.0            # Excel file reading support (.xlsx files)
 xlrd>=2.0.1                # Excel file reading support (.xls files)
 # Data Visualization
-matplotlib>=3.0
-plotly>=5.15.0             # Interactive charts and graphs
+matplotlib>=3.0         # Interactive charts and graphs
 # Machine Learning
 scikit-learn>=1.3.0        # Machine learning models for predictions
 scipy>=1.10.0              # Scientific computing library
